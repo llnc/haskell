@@ -18,6 +18,21 @@ Paciente
    deriving Show
   
 
+   
+Prontuario
+    pacienteId PacienteId
+    dat Text
+    deriving Show
+    
+Hospital
+    nome Text
+    cnpj Text
+    deriving Show
+    
+Atendimento
+    pacienteId PacienteId
+    hospitalId HospitalId
+    deriving Show
 |]
 
 
