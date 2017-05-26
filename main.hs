@@ -27,19 +27,22 @@ Medico
 Prontuario
     pacienteId PacienteId
     medicoId MedicoId
+    hospitalId HospitalId
     dat Text
     deriving Show
     
 Central
     nome Text
     cnpj Text
-    atendimentoId AtendimentoId
+    prontuarioId ProntuarioId
     deriving Show
     
-Atendimento
-    pacienteId PacienteId
-    hospitalId HospitalId
-    deriving Show
+
+Hospital
+    nome Text
+    cnpj Text
+    medicoId MedicoId
+    
 |]
 
 
