@@ -17,10 +17,16 @@ Paciente
     cpf Text
    deriving Show
   
-
+Medico
+    nome Text
+    idade Int
+    cpf Text
+    crn Text
+    deriving Show
    
 Prontuario
     pacienteId PacienteId
+    medicoId MedicoId
     dat Text
     deriving Show
     
