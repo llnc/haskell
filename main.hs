@@ -21,7 +21,7 @@ Medico
     nome Text
     idade Int
     cpf Text
-    crn Text
+    crm Text
     deriving Show
    
 Prontuario
@@ -30,9 +30,10 @@ Prontuario
     dat Text
     deriving Show
     
-Hospital
+Central
     nome Text
     cnpj Text
+    atendimentoId AtendimentoId
     deriving Show
     
 Atendimento
