@@ -3,7 +3,6 @@ import Database.Persist.Postgresql
 import Data.Text
 import Control.Monad.Logger (runStdoutLoggingT)
 
-
              
 data App = App{connPool :: ConnectionPool}
 
@@ -16,33 +15,33 @@ Paciente
     idade Int
     cpf Text
    deriving Show
-  
-Medico
-    nome Text
-    idade Int
-    cpf Text
-    crm Text
-    deriving Show
-   
 Prontuario
     pacienteId PacienteId
     medicoId MedicoId
     hospitalId HospitalId
     dat Text
     deriving Show
-    
-Central
-    nome Text
-    cnpj Text
-    prontuarioId ProntuarioId
+ProntuarioEnfermidade
+    prontuarioId PacienteId
+    infermidadeId InfermidadeId
     deriving Show
-    
+
+Infermidade
+   cid Text --possivel tipo
+   deriving Show
+   
+Medico
+    nome Text
+    idade Int
+    cpf Text
+    crm Text
+    deriving Show
 
 Hospital
     nome Text
     cnpj Text
     medicoId MedicoId
-    
+    deriving Show
 |]
 
 
