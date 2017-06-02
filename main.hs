@@ -2,15 +2,14 @@ import Yesod
 import Database.Persist.Postgresql
 import Data.Text
 import Control.Monad.Logger (runStdoutLoggingT)
-
              
 data App = App{connPool :: ConnectionPool}
 
-instance Yesod App 
+instance Yesod App
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 
-Paciente 
+Paciente json
     nome Text
     idade Int
     cpf Text
@@ -22,21 +21,19 @@ Prontuario
     dat Text
     deriving Show
 ProntuarioEnfermidade
-    prontuarioId PacienteId
-    infermidadeId InfermidadeId
+    prontuarioId ProntuarioId
+    infermidadeId InfermidadeId  -- possivel datatype enum
     deriving Show
-
 Infermidade
    cid Text --possivel tipo
    deriving Show
-   
 Medico
     nome Text
     idade Int
     cpf Text
     crm Text
+    especializacao Text
     deriving Show
-
 Hospital
     nome Text
     cnpj Text
@@ -44,14 +41,43 @@ Hospital
     deriving Show
 |]
 
+--yesod despatcher
+mkYesod "App" [parseRoutes| 
+/                                                   HomeR               GET
 
-mkYesod "App" [parseRoutes|
-/ HomeR GET
+!/paciente/#PacienteId                              BuscarPacienteR     GET 
+/paciente/listarPacientes                           PacienteListarR     GET
+/paciente/inserir                                   PacienteInserirR    POST
+/paciente/alterar/#PacienteId                       PacienteAlterarR    PATH
+/paciente/remover/#PacienteId                       PacienteRemoverR    DELETE
+
 
 |]
 
+--HANDLERS
 getHomeR :: Handler ()
 getHomeR = undefined
+                                    --handler vai definir qual mimetype 
+getBuscarPacienteR :: PacienteId -> Handler Value
+getBuscarPacienteR pid = do
+    paciente <- runDB $ get404 pid
+    sendResponse ( object [pack "resp" .= toJSON paciente ])
+
+getPacienteListarR :: Handler ()
+getPacienteListarR = undefined
+
+postPacienteInserirR :: Handler ()
+postPacienteInserirR = do
+    paciente <- requireJsonBody :: Handler Paciente
+    pid <- runDB $ insert paciente
+    sendResponse ( object [pack "resp" .= pack "usuario inserido com sucesso" ])
+    
+
+pathPacienteAlterarR :: PacienteId -> Handler ()
+pathPacienteAlterarR pid = undefined
+
+deletePacienteRemoverR :: PacienteId -> Handler ()
+deletePacienteRemoverR pid = undefined
 
 
 instance YesodPersist App where
