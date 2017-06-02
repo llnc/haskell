@@ -1,6 +1,6 @@
 import Yesod
 import Database.Persist.Postgresql
-import Data.Text
+import Data.Text hiding (replace)
 import Control.Monad.Logger (runStdoutLoggingT)
              
 data App = App{connPool :: ConnectionPool}
@@ -48,7 +48,7 @@ mkYesod "App" [parseRoutes|
 !/paciente/#PacienteId                              BuscarPacienteR     GET 
 /paciente/listarPacientes                           PacienteListarR     GET
 /paciente/inserir                                   PacienteInserirR    POST
-/paciente/alterar/#PacienteId                       PacienteAlterarR    PATH
+/paciente/alterar/#PacienteId                       PacienteAlterarR    PUT
 /paciente/remover/#PacienteId                       PacienteRemoverR    DELETE
 
 
@@ -73,8 +73,11 @@ postPacienteInserirR = do
     sendResponse ( object [pack "resp" .= pack "usuario inserido com sucesso" ])
     
 
-pathPacienteAlterarR :: PacienteId -> Handler ()
-pathPacienteAlterarR pid = undefined
+putPacienteAlterarR :: PacienteId -> Handler ()
+putPacienteAlterarR pid = do
+    paciente <- requireJsonBody :: Handler Paciente
+    runDB $ replace pid paciente
+    sendResponse ( object [pack "resp" .= pack "usuario atualizado com sucesso" ])
 
 deletePacienteRemoverR :: PacienteId -> Handler ()
 deletePacienteRemoverR pid = undefined
