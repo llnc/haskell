@@ -148,13 +148,13 @@ putHospitalAlterarR hid = do
     sendResponse ( object [pack "resp" .= pack "Hospital atualizado com sucesso" ])
 ---------------------------------------------------------------------------------------------VERIFICAR
 
-getProntuarioR :: ProntuarioId -> Handler Value
-getProntuarioR prid = do
+getProntuarioBuscarR :: ProntuarioId -> Handler Value
+getProntuarioBuscarR prid = do
     prontuario <- runDB $ get404 prid
     sendResponse ( object [pack "resp" .= toJSON prontuario ])
 
-getProntuarioR :: Handler Value
-getProntuarioR = do
+getProntuarioListarR :: Handler Value
+getProntuarioListarR = do
     prontuario <- runDB $ selectList [] [Asc ProntuarioNome]
     sendResponse ( object [pack "resp" .= toJSON prontuario ])
 
