@@ -61,7 +61,11 @@ mkYesod "App" [parseRoutes|
 /hospital/inserir                                   HospitalInserirR            POST
 /hospital/alterar/#HospitalId                       HospitalAlterarR            PUT
 
-/enfermidade/#EnfermidadeId                         EnfermidadeBuscarR          GET
+!/enfermidade/#EnfermidadeId                         EnfermidadeBuscarR          GET
+/enfermidade/listarEnfermidades                     EnfermidadesListarR         GET
+/enfermidade/inserir                                EnfermidadeInserirR         POST
+
+
 
 !/prontuario/#ProntuarioId                          ProntuarioBuscarR           GET
 /prontuario/listarProntuarios                       ProntuariosListarR          GET
@@ -69,9 +73,9 @@ mkYesod "App" [parseRoutes|
 
 |]
 
---HANDLERS
+-- HANDLERS
 
---========= PACIENTE
+-- ========= PACIENTE
 getHomeR :: Handler ()
 getHomeR = undefined
                                     --handler vai definir qual mimetype 
@@ -101,7 +105,7 @@ putPacienteAlterarR pid = do
 deletePacienteRemoverR :: PacienteId -> Handler ()
 deletePacienteRemoverR pid = undefined
 
---========= Medico
+-- ========= Medico
 -------------------------------------
 getMedicoBuscarR :: MedicoId -> Handler Value
 getMedicoBuscarR mid = do
@@ -127,7 +131,7 @@ putMedicoAlterarR mid = do
     runDB $ replace mid medico
     sendResponse ( object [pack "resp" .= pack "Medico atualizado com sucesso" ])
 --------------------------------------------------------------------------------------------------
---=========HOSPITAL
+-- =========HOSPITAL
 getHospitalBuscarR :: HospitalId -> Handler Value
 getHospitalBuscarR hid = do
     hospital <- runDB $ get404 hid
@@ -151,7 +155,7 @@ putHospitalAlterarR hid = do
     runDB $ replace hid hospital
     sendResponse ( object [pack "resp" .= pack "Hospital atualizado com sucesso" ])
 ---------------------------------------------------------------------------------------------VERIFICAR
---=========PRONTUARIO
+-- =========PRONTUARIO
 
 getProntuarioBuscarR :: ProntuarioId -> Handler Value
 getProntuarioBuscarR prid = do
@@ -170,12 +174,23 @@ postProntuarioInserirR = do
     sendResponse ( object [pack "resp" .= pack "Prontuario inserido com sucesso" ])
     
 ---------------------------------------------------------------------------------------------VERIFICAR
---========= ENFERMIDADE
+-- ========= ENFERMIDADE
 
 getEnfermidadeBuscarR :: EnfermidadeId -> Handler Value
 getEnfermidadeBuscarR eid = do
     enfermidade <- runDB $ get404 eid
     sendResponse ( object [pack "resp" .= toJSON enfermidade ])    
+    
+getEnfermidadesListarR :: Handler Value
+getEnfermidadesListarR = do
+    enfermidade <- runDB $ selectList [] [Asc EnfermidadeId]
+    sendResponse ( object [pack "resp" .= toJSON enfermidade ])
+
+postEnfermidadeInserirR :: Handler ()
+postEnfermidadeInserirR = do
+    enfermidade <- requireJsonBody :: Handler Enfermidade
+    eid <- runDB $ insert enfermidade
+    sendResponse ( object [pack "resp" .= pack "Enfermidade inserida com sucesso" ])    
 
 
 
