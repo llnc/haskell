@@ -22,9 +22,9 @@ Prontuario
     deriving Show
 ProntuarioEnfermidade
     prontuarioId ProntuarioId
-    infermidadeId InfermidadeId  -- possivel datatype enum
+    enfermidadeId EnfermidadeId  -- possivel datatype enum
     deriving Show
-Infermidade
+Enfermidade
    cid Text --possivel tipo
    deriving Show
 Medico
@@ -43,14 +43,29 @@ Hospital
 
 --yesod despatcher
 mkYesod "App" [parseRoutes| 
-/                                                   HomeR               GET
+/                                                   HomeR                       GET
+        
+!/paciente/#PacienteId                              PacienteBuscarR             GET 
+/paciente/listarPacientes                           PacienteListarR             GET
+/paciente/inserir                                   PacienteInserirR            POST
+/paciente/alterar/#PacienteId                       PacienteAlterarR            PUT
+/paciente/remover/#PacienteId                       PacienteRemoverR            DELETE
+        
+/medico/#MedicoId                                   MedicoBuscarR               GET
+/medico/listarMedicos                               MedicosListarR              GET
+/medico/inserir                                     MedicoInserirR              POST
+/medico/alterar/#MedicoId                           MedicoAlterarR              PUT
 
-!/paciente/#PacienteId                              BuscarPacienteR     GET 
-/paciente/listarPacientes                           PacienteListarR     GET
-/paciente/inserir                                   PacienteInserirR    POST
-/paciente/alterar/#PacienteId                       PacienteAlterarR    PUT
-/paciente/remover/#PacienteId                       PacienteRemoverR    DELETE
+/hospital/#HospitalId                               HospitalBuscarR             GET
+/hospital/listarHospitais                           HospitalListarR             GET
+/hospital/inserir                                   HospitalInserirR            POST
+/hospital/alterar/#HospitalId                       HospitalAlterarR            PUT
 
+/enfermidade/#EnfermidadeId                         EnfermidadeBuscarR          GET
+
+/prontuario/#ProntuarioId                           ProntuarioBuscarR           GET
+/prontuario/listarProntuarios                       ProntuariosListarR          GET
+/prontuario/inserir                                 ProntuarioInserirR          POST
 
 |]
 
@@ -58,29 +73,79 @@ mkYesod "App" [parseRoutes|
 getHomeR :: Handler ()
 getHomeR = undefined
                                     --handler vai definir qual mimetype 
-getBuscarPacienteR :: PacienteId -> Handler Value
-getBuscarPacienteR pid = do
+getPacienteBuscarR :: PacienteId -> Handler Value
+getPacienteBuscarR pid = do
     paciente <- runDB $ get404 pid
     sendResponse ( object [pack "resp" .= toJSON paciente ])
 
-getPacienteListarR :: Handler ()
-getPacienteListarR = undefined
+getPacienteListarR :: Handler Value
+getPacienteListarR = do
+    pacientes <- runDB $ selectList [] [Asc PacienteNome]
+    sendResponse ( object [pack "resp" .= toJSON paciente ])
 
 postPacienteInserirR :: Handler ()
 postPacienteInserirR = do
     paciente <- requireJsonBody :: Handler Paciente
     pid <- runDB $ insert paciente
-    sendResponse ( object [pack "resp" .= pack "usuario inserido com sucesso" ])
+    sendResponse ( object [pack "resp" .= pack "Paciente inserido com sucesso" ])
     
 
 putPacienteAlterarR :: PacienteId -> Handler ()
 putPacienteAlterarR pid = do
     paciente <- requireJsonBody :: Handler Paciente
     runDB $ replace pid paciente
-    sendResponse ( object [pack "resp" .= pack "usuario atualizado com sucesso" ])
+    sendResponse ( object [pack "resp" .= pack "Paciente atualizado com sucesso" ])
 
 deletePacienteRemoverR :: PacienteId -> Handler ()
 deletePacienteRemoverR pid = undefined
+-------------------------------------
+getMedicoBuscarR :: MedicoId -> Handler Value
+getMedicoBuscarR mid = do
+    medico <- runDB $ get404 mid
+    sendResponse ( object [pack "resp" .= toJSON medico ])
+
+getMedicoListarR :: Handler Value
+getMedicoListarR = do
+    medico <- runDB $ selectList [] [Asc MedicoNome]
+    sendResponse ( object [pack "resp" .= toJSON medico ])
+    
+
+postMedicoInserirR :: Handler ()
+postMedicoInserirR = do
+    medico <- requireJsonBody :: Handler Medico
+    mid <- runDB $ insert medico
+    sendResponse ( object [pack "resp" .= pack "Medico inserido com sucesso" ])
+    
+
+putMedicoAlterarR :: MedicoId -> Handler ()
+putMedicoAlterarR mid = do
+    medico <- requireJsonBody :: Handler Medico
+    runDB $ replace mid medico
+    sendResponse ( object [pack "resp" .= pack "Medico atualizado com sucesso" ])
+--------------------------------------------------------------------------------------------------
+
+getHospitalBuscarR :: PacienteId -> Handler Value
+getHospitalBuscarR hid = do
+    hospital <- runDB $ get404 pid
+    sendResponse ( object [pack "resp" .= toJSON hospital ])
+
+getHospitalListarR :: Handler Value
+getHospitalListarR = do
+    hospital <- runDB $ selectList [] [Asc HospitalNome]
+    sendResponse ( object [pack "resp" .= toJSON hospital ])
+
+postHospitalInserirR :: Handler ()
+postHospitalInserirR = do
+    hospital <- requireJsonBody :: Handler Hospital
+    hid <- runDB $ insert hospital
+    sendResponse ( object [pack "resp" .= pack "Hospital inserido com sucesso" ])
+    
+
+putHospitalAlterarR :: HospitalId -> Handler ()
+putHospitalAlterarR hid = do
+    hospital <- requireJsonBody :: Handler Hospital
+    runDB $ replace hid hospital
+    sendResponse ( object [pack "resp" .= pack "Hospital atualizado com sucesso" ])
 
 
 instance YesodPersist App where
