@@ -14,27 +14,27 @@ Paciente json
     idade Int
     cpf Text
    deriving Show
-Prontuario
+Prontuario json
     pacienteId PacienteId
     medicoId MedicoId
     hospitalId HospitalId
     dat Text
     deriving Show
-ProntuarioEnfermidade
+ProntuarioEnfermidade json
     prontuarioId ProntuarioId
     enfermidadeId EnfermidadeId  -- possivel datatype enum
     deriving Show
-Enfermidade
+Enfermidade json
    cid Text --possivel tipo
    deriving Show
-Medico
+Medico json
     nome Text
     idade Int
     cpf Text
     crm Text
     especializacao Text
     deriving Show
-Hospital
+Hospital json
     nome Text
     cnpj Text
     medicoId MedicoId
@@ -51,25 +51,27 @@ mkYesod "App" [parseRoutes|
 /paciente/alterar/#PacienteId                       PacienteAlterarR            PUT
 /paciente/remover/#PacienteId                       PacienteRemoverR            DELETE
         
-/medico/#MedicoId                                   MedicoBuscarR               GET
+!/medico/#MedicoId                                  MedicoBuscarR               GET
 /medico/listarMedicos                               MedicosListarR              GET
 /medico/inserir                                     MedicoInserirR              POST
 /medico/alterar/#MedicoId                           MedicoAlterarR              PUT
 
-/hospital/#HospitalId                               HospitalBuscarR             GET
+!/hospital/#HospitalId                              HospitalBuscarR             GET
 /hospital/listarHospitais                           HospitalListarR             GET
 /hospital/inserir                                   HospitalInserirR            POST
 /hospital/alterar/#HospitalId                       HospitalAlterarR            PUT
 
 /enfermidade/#EnfermidadeId                         EnfermidadeBuscarR          GET
 
-/prontuario/#ProntuarioId                           ProntuarioBuscarR           GET
+!/prontuario/#ProntuarioId                          ProntuarioBuscarR           GET
 /prontuario/listarProntuarios                       ProntuariosListarR          GET
 /prontuario/inserir                                 ProntuarioInserirR          POST
 
 |]
 
 --HANDLERS
+
+--========= PACIENTE
 getHomeR :: Handler ()
 getHomeR = undefined
                                     --handler vai definir qual mimetype 
@@ -80,7 +82,7 @@ getPacienteBuscarR pid = do
 
 getPacienteListarR :: Handler Value
 getPacienteListarR = do
-    pacientes <- runDB $ selectList [] [Asc PacienteNome]
+    paciente <- runDB $ selectList [] [Asc PacienteNome]
     sendResponse ( object [pack "resp" .= toJSON paciente ])
 
 postPacienteInserirR :: Handler ()
@@ -98,14 +100,16 @@ putPacienteAlterarR pid = do
 
 deletePacienteRemoverR :: PacienteId -> Handler ()
 deletePacienteRemoverR pid = undefined
+
+--========= Medico
 -------------------------------------
 getMedicoBuscarR :: MedicoId -> Handler Value
 getMedicoBuscarR mid = do
     medico <- runDB $ get404 mid
     sendResponse ( object [pack "resp" .= toJSON medico ])
 
-getMedicoListarR :: Handler Value
-getMedicoListarR = do
+getMedicosListarR :: Handler Value
+getMedicosListarR = do
     medico <- runDB $ selectList [] [Asc MedicoNome]
     sendResponse ( object [pack "resp" .= toJSON medico ])
     
@@ -123,10 +127,10 @@ putMedicoAlterarR mid = do
     runDB $ replace mid medico
     sendResponse ( object [pack "resp" .= pack "Medico atualizado com sucesso" ])
 --------------------------------------------------------------------------------------------------
-
-getHospitalBuscarR :: PacienteId -> Handler Value
+--=========HOSPITAL
+getHospitalBuscarR :: HospitalId -> Handler Value
 getHospitalBuscarR hid = do
-    hospital <- runDB $ get404 pid
+    hospital <- runDB $ get404 hid
     sendResponse ( object [pack "resp" .= toJSON hospital ])
 
 getHospitalListarR :: Handler Value
@@ -147,15 +151,16 @@ putHospitalAlterarR hid = do
     runDB $ replace hid hospital
     sendResponse ( object [pack "resp" .= pack "Hospital atualizado com sucesso" ])
 ---------------------------------------------------------------------------------------------VERIFICAR
+--=========PRONTUARIO
 
 getProntuarioBuscarR :: ProntuarioId -> Handler Value
 getProntuarioBuscarR prid = do
     prontuario <- runDB $ get404 prid
     sendResponse ( object [pack "resp" .= toJSON prontuario ])
 
-getProntuarioListarR :: Handler Value
-getProntuarioListarR = do
-    prontuario <- runDB $ selectList [] [Asc ProntuarioNome]
+getProntuariosListarR :: Handler Value
+getProntuariosListarR = do
+    prontuario <- runDB $ selectList [] [Asc ProntuarioId]
     sendResponse ( object [pack "resp" .= toJSON prontuario ])
 
 postProntuarioInserirR :: Handler ()
@@ -163,6 +168,16 @@ postProntuarioInserirR = do
     prontuario <- requireJsonBody :: Handler Prontuario
     prid <- runDB $ insert prontuario
     sendResponse ( object [pack "resp" .= pack "Prontuario inserido com sucesso" ])
+    
+---------------------------------------------------------------------------------------------VERIFICAR
+--========= ENFERMIDADE
+
+getEnfermidadeBuscarR :: EnfermidadeId -> Handler Value
+getEnfermidadeBuscarR eid = do
+    enfermidade <- runDB $ get404 eid
+    sendResponse ( object [pack "resp" .= toJSON enfermidade ])    
+
+
 
 
 instance YesodPersist App where
