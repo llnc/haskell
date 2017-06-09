@@ -146,6 +146,23 @@ putHospitalAlterarR hid = do
     hospital <- requireJsonBody :: Handler Hospital
     runDB $ replace hid hospital
     sendResponse ( object [pack "resp" .= pack "Hospital atualizado com sucesso" ])
+---------------------------------------------------------------------------------------------VERIFICAR
+
+getProntuarioR :: ProntuarioId -> Handler Value
+getProntuarioR prid = do
+    prontuario <- runDB $ get404 prid
+    sendResponse ( object [pack "resp" .= toJSON prontuario ])
+
+getProntuarioR :: Handler Value
+getProntuarioR = do
+    prontuario <- runDB $ selectList [] [Asc ProntuarioNome]
+    sendResponse ( object [pack "resp" .= toJSON prontuario ])
+
+postProntuarioInserirR :: Handler ()
+postProntuarioInserirR = do
+    prontuario <- requireJsonBody :: Handler Prontuario
+    prid <- runDB $ insert prontuario
+    sendResponse ( object [pack "resp" .= pack "Prontuario inserido com sucesso" ])
 
 
 instance YesodPersist App where
