@@ -51,7 +51,7 @@ mkYesod "App" [parseRoutes|
 /paciente/listarPacientes                           PacienteListarR             GET
 /paciente/inserir                                   PacienteInserirR            POST
 /paciente/alterar/#PacienteId                       PacienteAlterarR            PUT
-/paciente/remover/#PacienteId                       PacienteRemoverR            DELETE
+/paciente/remover/#PacienteId                       PacienteRemoverR            DELETE --
         
 !/medico/#MedicoId                                  MedicoBuscarR               GET
 !/medico/nome/#Text                                 MedicoBuscarNomeR           GET
@@ -59,14 +59,14 @@ mkYesod "App" [parseRoutes|
 /medico/inserir                                     MedicoInserirR              POST
 /medico/alterar/#MedicoId                           MedicoAlterarR              PUT
 /medico/especializacao/#Text                        MedicoBuscarEspecR          GET
-/medico/hospitais/#Text                             MedicoBuscarHospR           GET
+/medico/hospitais/#MedicoId                         MedicoBuscarHospR           GET  --
 
 !/hospital/#HospitalId                              HospitalBuscarR             GET
 /hospital/nome/#Text                                HospitalBuscarNomeR         GET
 /hospital/listarHospitais                           HospitalListarR             GET
 /hospital/inserir                                   HospitalInserirR            POST
 /hospital/alterar/#HospitalId                       HospitalAlterarR            PUT
-/hospital/buscar-medico/#Text                       HospitalBuscarMedicoR       GET
+/hospital/buscar-medico/#HospitalId                 HospitalBuscarMedicoR       GET --
 
 !/enfermidade/#EnfermidadeId                        EnfermidadeBuscarR          GET
 /enfermidade/listarEnfermidades                     EnfermidadesListarR         GET
@@ -78,9 +78,9 @@ mkYesod "App" [parseRoutes|
 !/prontuario/#ProntuarioId                          ProntuarioBuscarR           GET
 /prontuario/listarProntuarios                       ProntuariosListarR          GET
 /prontuario/inserir                                 ProntuarioInserirR          POST
-/prontuario/buscar-paciente/#Text                   ProntuarioBuscarPacienteR   GET                            
-/prontuario/buscar-medico/#Text                     ProntuarioBuscarMedicoR     GET
-/prontuario/buscar-enfermidade/#Text                ProntuarioBuscarEnfermR     GET
+/prontuario/buscar-paciente/#PacienteId             ProntuarioBuscarPacienteR   GET   --                         
+/prontuario/buscar-medico/#MedicoId                 ProntuarioBuscarMedicoR     GET   --
+/prontuario/buscar-enfermidade/#EnfermidadeId       ProntuarioBuscarEnfermR     GET   --
 
 |]
 
@@ -97,7 +97,7 @@ getPacienteBuscarR pid = do
     
 getPacienteBuscarNomeR :: Text -> Handler Value
 getPacienteBuscarNomeR pnome = do
-    npaciente <- runDB $ selectList [Filter Paciente (Left $ T.concat ["%", pnome, "%"]) (BackendSpecificFilter "ILIKE")] []
+    npaciente <- runDB $ selectList [Filter PacienteNome (Left $ T.concat ["%", pnome, "%"]) (BackendSpecificFilter "ILIKE")] []
     sendResponse ( object [pack "resp" .= toJSON npaciente ])
 
 getPacienteListarR :: Handler Value
@@ -119,7 +119,9 @@ putPacienteAlterarR pid = do
     sendResponse ( object [pack "resp" .= pack "Paciente atualizado com sucesso" ])
 
 deletePacienteRemoverR :: PacienteId -> Handler ()
-deletePacienteRemoverR pid = undefined
+deletePacienteRemoverR pid = do
+    runDB $ delete pid
+    sendResponse (object [pack "resp" .= pack "Paciente Deletado com sucesso"] )
 
 -- ========= Medico
 -------------------------------------
@@ -155,8 +157,10 @@ putMedicoAlterarR mid = do
 getMedicoBuscarEspecR :: Text -> Handler Value
 getMedicoBuscarEspecR espnome = do
     especializacao <- runDB $ selectList [Filter MedicoEspecializacao (Left $ T.concat ["%", espnome, "%"]) (BackendSpecificFilter "ILIKE")] []
-    sendResponse ( object [pack "resp" .= toJSON especializacao ])  
---------------------------------------------------------------------------------------------------
+    sendResponse ( object [pack "resp" .= toJSON especializacao ])
+
+-- REGRAS    
+---------------------------------------------------
 -- =========HOSPITAL
 getHospitalBuscarR :: HospitalId -> Handler Value
 getHospitalBuscarR hid = do
@@ -186,7 +190,10 @@ putHospitalAlterarR hid = do
     runDB $ replace hid hospital
     sendResponse ( object [pack "resp" .= pack "Hospital atualizado com sucesso" ])
     
--- getHospitalBuscarMedicoR    
+-- getHospitalBuscarMedicoR
+
+
+
 ---------------------------------------------------------------------------------------------VERIFICAR
 -- =========PRONTUARIO
 
@@ -232,6 +239,26 @@ getEnfermidadeBuscarNomeR enome = do
     enfermidades <- runDB $ selectList [Filter EnfermidadeNome (Left $ T.concat ["%", enome, "%"]) (BackendSpecificFilter "ILIKE")] []
 -- (rawSql "select ?? from Enfermidade where nome ilike '%?%'" [toPersistText enome]) :: [Entity Enfermidade]
     sendResponse ( object [pack "resp" .= toJSON enfermidades ])
+    
+    
+    
+-- ===================================== REGRAS DE NEGOCIO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+getMedicoBuscarHospR :: MedicoId -> Handler Value
+getMedicoBuscarHospR mid = undefined
+
+getHospitalBuscarMedicoR :: HospitalId -> Handler Value
+getHospitalBuscarMedicoR hid = undefined
+
+getProntuarioBuscarPacienteR :: PacienteId -> Handler Value
+getProntuarioBuscarPacienteR  prontid = undefined 
+
+getProntuarioBuscarMedicoR :: MedicoId -> Handler Value
+getProntuarioBuscarMedicoR mid = undefined
+
+getProntuarioBuscarEnfermR :: EnfermidadeId -> Handler Value
+getProntuarioBuscarEnfermR enfid = undefined
+-----------------------------------------------
 
 instance YesodPersist App where
    type YesodPersistBackend App = SqlBackend
