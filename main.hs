@@ -47,31 +47,39 @@ mkYesod "App" [parseRoutes|
 /                                                   HomeR                       GET
         
 !/paciente/#PacienteId                              PacienteBuscarR             GET 
+!/paciente/buscar-nome/#Text                        PacienteBuscarNomeR         GET
 /paciente/listarPacientes                           PacienteListarR             GET
 /paciente/inserir                                   PacienteInserirR            POST
 /paciente/alterar/#PacienteId                       PacienteAlterarR            PUT
 /paciente/remover/#PacienteId                       PacienteRemoverR            DELETE
         
 !/medico/#MedicoId                                  MedicoBuscarR               GET
+!/medico/nome/#Text                                 MedicoBuscarNomeR           GET
 /medico/listarMedicos                               MedicosListarR              GET
 /medico/inserir                                     MedicoInserirR              POST
 /medico/alterar/#MedicoId                           MedicoAlterarR              PUT
+/medico/especializacao/#Text                        MedicoAlterarR              GET
 
 !/hospital/#HospitalId                              HospitalBuscarR             GET
+/hospital/nome/#Text                                HospitalBuscarNomeR         GET
 /hospital/listarHospitais                           HospitalListarR             GET
 /hospital/inserir                                   HospitalInserirR            POST
 /hospital/alterar/#HospitalId                       HospitalAlterarR            PUT
+/hospital/buscar-medico/#Text                       HospitalBuscarMedicoR       GET
 
 !/enfermidade/#EnfermidadeId                        EnfermidadeBuscarR          GET
 /enfermidade/listarEnfermidades                     EnfermidadesListarR         GET
 /enfermidade/inserir                                EnfermidadeInserirR         POST
-/enfermidade/buscar/#Text                          EnfermidadeBuscarNomeR      GET
+/enfermidade/buscar/#Text                           EnfermidadeBuscarNomeR      GET
 
 
 
 !/prontuario/#ProntuarioId                          ProntuarioBuscarR           GET
 /prontuario/listarProntuarios                       ProntuariosListarR          GET
 /prontuario/inserir                                 ProntuarioInserirR          POST
+/prontuario/buscar-paciente/#Text                   ProntuarioBuscarPacienteR   GET                            
+/prontuario/buscar-medico/#Text                     ProntuarioBuscarMedicoR     GET
+/prontuario/buscar-enfermidade/#Text                ProntuarioBuscarEnfermR     GET
 
 |]
 
