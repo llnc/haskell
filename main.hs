@@ -58,7 +58,8 @@ mkYesod "App" [parseRoutes|
 /medico/listarMedicos                               MedicosListarR              GET
 /medico/inserir                                     MedicoInserirR              POST
 /medico/alterar/#MedicoId                           MedicoAlterarR              PUT
-/medico/especializacao/#Text                        MedicoAlterarR              GET
+/medico/especializacao/#Text                        MedicoBuscarEspecR          GET
+/medico/hospitais/#Text                             MedicoBuscarHospR           GET
 
 !/hospital/#HospitalId                              HospitalBuscarR             GET
 /hospital/nome/#Text                                HospitalBuscarNomeR         GET
@@ -93,6 +94,11 @@ getPacienteBuscarR :: PacienteId -> Handler Value
 getPacienteBuscarR pid = do
     paciente <- runDB $ get404 pid
     sendResponse ( object [pack "resp" .= toJSON paciente ])
+    
+getPacienteBuscarNomeR :: Text -> Handler Value
+getPacienteBuscarNomeR pnome = do
+    npaciente <- runDB $ selectList [Filter Paciente (Left $ T.concat ["%", pnome, "%"]) (BackendSpecificFilter "ILIKE")] []
+    sendResponse ( object [pack "resp" .= toJSON npaciente ])
 
 getPacienteListarR :: Handler Value
 getPacienteListarR = do
@@ -122,6 +128,11 @@ getMedicoBuscarR mid = do
     medico <- runDB $ get404 mid
     sendResponse ( object [pack "resp" .= toJSON medico ])
 
+getMedicoBuscarNomeR :: Text -> Handler Value
+getMedicoBuscarNomeR mednome = do
+    medico <- runDB $ selectList [Filter MedicoNome (Left $ T.concat ["%", mednome, "%"]) (BackendSpecificFilter "ILIKE")] []
+    sendResponse ( object [pack "resp" .= toJSON medico ])
+
 getMedicosListarR :: Handler Value
 getMedicosListarR = do
     medico <- runDB $ selectList [] [Asc MedicoNome]
@@ -140,12 +151,22 @@ putMedicoAlterarR mid = do
     medico <- requireJsonBody :: Handler Medico
     runDB $ replace mid medico
     sendResponse ( object [pack "resp" .= pack "Medico atualizado com sucesso" ])
+    
+getMedicoBuscarEspecR :: Text -> Handler Value
+getMedicoBuscarEspecR espnome = do
+    especializacao <- runDB $ selectList [Filter MedicoEspecializacao (Left $ T.concat ["%", espnome, "%"]) (BackendSpecificFilter "ILIKE")] []
+    sendResponse ( object [pack "resp" .= toJSON especializacao ])  
 --------------------------------------------------------------------------------------------------
 -- =========HOSPITAL
 getHospitalBuscarR :: HospitalId -> Handler Value
 getHospitalBuscarR hid = do
     hospital <- runDB $ get404 hid
     sendResponse ( object [pack "resp" .= toJSON hospital ])
+    
+getHospitalBuscarNomeR :: Text -> Handler Value
+getHospitalBuscarNomeR hnome = do
+    nome <- runDB $ selectList [Filter HospitalNome (Left $ T.concat ["%", hnome, "%"]) (BackendSpecificFilter "ILIKE")] []
+    sendResponse ( object [pack "resp" .= toJSON nome ])    
 
 getHospitalListarR :: Handler Value
 getHospitalListarR = do
@@ -164,6 +185,8 @@ putHospitalAlterarR hid = do
     hospital <- requireJsonBody :: Handler Hospital
     runDB $ replace hid hospital
     sendResponse ( object [pack "resp" .= pack "Hospital atualizado com sucesso" ])
+    
+-- getHospitalBuscarMedicoR    
 ---------------------------------------------------------------------------------------------VERIFICAR
 -- =========PRONTUARIO
 
