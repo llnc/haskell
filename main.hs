@@ -1,6 +1,6 @@
 import Yesod
 import Database.Persist.Postgresql
-import Data.Text hiding (replace)
+import Data.Text as T hiding (replace)
 import Control.Monad.Logger (runStdoutLoggingT)
              
 data App = App{connPool :: ConnectionPool}
@@ -25,7 +25,8 @@ ProntuarioEnfermidade json
     enfermidadeId EnfermidadeId  -- possivel datatype enum
     deriving Show
 Enfermidade json
-   cid Text --possivel tipo
+   cid Text
+   nome Text
    deriving Show
 Medico json
     nome Text
@@ -61,9 +62,10 @@ mkYesod "App" [parseRoutes|
 /hospital/inserir                                   HospitalInserirR            POST
 /hospital/alterar/#HospitalId                       HospitalAlterarR            PUT
 
-!/enfermidade/#EnfermidadeId                         EnfermidadeBuscarR          GET
+!/enfermidade/#EnfermidadeId                        EnfermidadeBuscarR          GET
 /enfermidade/listarEnfermidades                     EnfermidadesListarR         GET
 /enfermidade/inserir                                EnfermidadeInserirR         POST
+/enfermidade/buscar/#Text                          EnfermidadeBuscarNomeR      GET
 
 
 
@@ -169,8 +171,10 @@ getProntuariosListarR = do
 
 postProntuarioInserirR :: Handler ()
 postProntuarioInserirR = do
-    prontuario <- requireJsonBody :: Handler Prontuario
-    prid <- runDB $ insert prontuario
+    (prontuario, eid) <- requireJsonBody :: Handler (Prontuario, EnfermidadeId)
+    peid <- runDB $ do
+        pid <- insert prontuario
+        insert $ ProntuarioEnfermidade pid eid
     sendResponse ( object [pack "resp" .= pack "Prontuario inserido com sucesso" ])
     
 ---------------------------------------------------------------------------------------------VERIFICAR
@@ -192,8 +196,11 @@ postEnfermidadeInserirR = do
     eid <- runDB $ insert enfermidade
     sendResponse ( object [pack "resp" .= pack "Enfermidade inserida com sucesso" ])    
 
-
-
+getEnfermidadeBuscarNomeR :: Text -> Handler Value
+getEnfermidadeBuscarNomeR enome = do
+    enfermidades <- runDB $ selectList [Filter EnfermidadeNome (Left $ T.concat ["%", enome, "%"]) (BackendSpecificFilter "ILIKE")] []
+-- (rawSql "select ?? from Enfermidade where nome ilike '%?%'" [toPersistText enome]) :: [Entity Enfermidade]
+    sendResponse ( object [pack "resp" .= toJSON enfermidades ])
 
 instance YesodPersist App where
    type YesodPersistBackend App = SqlBackend
