@@ -1,196 +1,37 @@
-## Rotas
-
-<table>
-<tr>
-<th><sub>ROTA</sub></th>
-<th><sub>DESCRIÇÃO</sub></th> 
- 
-</tr>
-<tr>
-<td><strong><sub>/</sub></strong></td>
-<td><sub></sub></td>
-
-</tr>
-
-<tr>
-<td><strong><sub>/paciente/{CodigoPaciente}</sub></strong></td>
-<td><sub>Buscar paciente através do ID.</sub></td>
-
-</tr>
-<tr>
-<td><strong><sub>/paciente/buscar-nome</sub></strong></td>
-<td><sub>Buscar paciente através do nome.</sub></td>
-
-</tr>
-<tr>
-<td><strong><sub>/paciente/listarPacientes</sub></strong></td>
-<td><sub>Listar todos os pacientes.</sub></td>
-
-</tr>    
-<tr>
-<td><strong><sub>/paciente/inserir</sub></strong></td>
-<td><sub>Cadastar novo paciente.</sub></td>
-
-</tr>        
-<tr>
-<td><strong><sub>/paciente/alterar/{CodigoPaciente}</sub></strong></td>
-<td><sub>Alterar informações do paciente através do ID.</sub></td>
-
-</tr>
-<tr>
-<td><strong><sub>/paciente/remover/{CodigoPaciente}</sub></strong></td>
-<td><sub>Remover paciente através do ID.</sub></td>
-
-</tr>
+|ROTAS                                                          |DESCRIÇÃO                                              |MÉTODOS HTTP       |          
+|---------------------------------------------------------------|-------------------------------------------------------|:-----------------:|
+|/paciente/#PacienteId                                          |Busca o paciente através do ID.                        |GET                |                                                              
+|/paciente/buscar-nome/#Text                                    |Busca o paciente através do nome.                      |GET                |            
+|/paciente/listarPacientes                                      |Lista todos os pacientes.                              |GET                |
+|/paciente/inserir                                              |Registra um novo paciente.                             |POST               |                                       
+|/paciente/alterar/#PacienteId                                  |Altera dados do paciente informando seu ID.            |PUT                |
+|/paciente/remover/#PacienteId                                  |Deleta o paciente informando ID.                       |DELETE             |
+|/medico/#MedicoId                                              |Busca o médico através do ID.                          |GET                |
+|/medico/nome/#Text                                             |Busca o médico por nome.                               |GET                | 
+|/medico/listarMedicos                                          |Lista todos os médicos.                                |GET                |
+|/medico/inserir                                                |Insere um médico.                                      |POST               |
+|/medico/especializacao/#Text                                   |Busca todos os médicos de uma especialidade.           |GET                |
+|/medico/alterar/#MedicoId                                      |Altera dados do médico informando seu ID.              |PUT                |   
+|/hospital/#HospitalId                                          |Busca o hospital através do ID.                        |GET                |
+|/hospital/nome/#Text                                           |Busca o hospital por nome.                             |GET                |
+|/hospital/listarHospitais                                      |Lista todos os hospitais.                              |GET                |
+|/hospital/inserir                                              |Registra um novo hospital.                             |POST               |
+|/hospital/alterar/#HospitalId                                  |Altera dados do hospital informando seu ID.            |PUT                |
+|/enfermidade/#EnfermidadeId                                    |Busca enfermidade através do ID.                       |GET                |
+|/enfermidade/listarEnfermidades                                |Lista todas as enfermidades.                           |GET                |
+|/enfermidade/inserir                                           |Registra uma nova enfermidade.                         |POST               |
+|/enfermidade/buscar/#Text                                      |Buscar enfermidade utilizando o nome.                  |GET                |   
+|/prontuario/#ProntuarioId                                      |Busca um prontuario através do ID.                     |GET                |   
+|/prontuario/listarProntuarios                                  |Lista todos os prontuarios.                            |GET                |   
+|/prontuario/inserir                                            |Insere um novo prontuario.                             |POST               |   
 
 
-<tr>
-<td><strong><sub>/medico/{CodigoMedico}</sub></strong></td>
-<td><sub>Buscar medico utilizando o ID.</sub></td>
+## Regras de Negocios
 
-</tr>
-<tr>
-<td><strong><sub>/medico/nome</sub></strong></td>
-<td><sub>Buscar medico através do nome.</sub></td>
-
-</tr>
-<tr>
-<td><strong><sub>/medico/listarMedicos</sub></strong></td>
-<td><sub>Listar todos os medicos cadastrados.</sub></td>
-
-</tr>    
-<tr>
-<td><strong><sub>/medico/inserir</sub></strong></td>
-<td><sub>Cadastrar novo medico.</sub></td>
-
-</tr>        
-<tr>
-<td><strong><sub>/medico/alterar/{CodigoMedico}</sub></strong></td>
-<td><sub>Alterar informações do medico através do ID.</sub></td>
-
-</tr>
-<tr>
-<td><strong><sub>/medico/especializacao</sub></strong></td>
-<td><sub>Buscar todos os médicos especialidade.</sub></td>
-
-</tr>
-
-<tr>
-<td><strong><sub>/hospital/{CodigoHospital}</sub></strong></td>
-<td><sub>Buscar hospital pelo ID.</sub></td>
-
-</tr>
-<tr>
-<td><strong><sub>/hospital/nome/</sub></strong></td>
-<td><sub>Buscar hospital através do nome.</sub></td>
-
-</tr>
-<tr>
-<td><strong><sub>/hospital/listarHospitais</sub></strong></td>
-<td><sub>Listar todos os hospitais cadastrados.</sub></td>
-
-</tr>    
-<tr>
-<td><strong><sub>/hospital/inserir</sub></strong></td>
-<td><sub>Cadastrar novo hospital.</sub></td>
-
-</tr>        
-<tr>
-<td><strong><sub>/hospital/alterar/{CodigoHospital}</sub></strong></td>
-<td><sub>Alterar informações do hospital através do ID.</sub></td>
-
-</tr>
-<tr>
-<td><strong><sub>/hospital/buscar-medico/{CodigoHospital}</sub></strong></td>
-<td><sub>Buscar todos os medicos que trabalham em um hospital ID</sub></td>
-
-</tr>
-
-
-<tr>
-<td><strong><sub>/enfermidade/{CodigoEnfermidade}</sub></strong></td>
-<td><sub>Buscar enfermidade utilizando o ID.</sub></td>
-
-</tr>
-<tr>
-<td><strong><sub>/enfermidade/listarEnfermidades</sub></strong></td>
-<td><sub>Listar todas as enfermidades.</sub></td>
-
-</tr>
-<tr>
-<td><strong><sub>/enfermidade/inserir</sub></strong></td>
-<td><sub>Cadastrar nova enfermidade.</sub></td>
-
-</tr>    
-
-<tr>
-<td><strong><sub>/enfermidade/buscar/</sub></strong></td>
-<td><sub>Buscar enfermidade através do nome.</sub></td>
-
-</tr>
-
-
-<tr>
-<td><strong><sub>/prontuario/{CodigoProntuario}</sub></strong></td>
-<td><sub>Buscar prontuario utilizando o ID.</sub></td>
-
-</tr>
-<tr>
-<td><strong><sub>/prontuario/listarProntuarios</sub></strong></td>
-<td><sub>Listar todos os prontuarios cadastrados.</sub></td>
-
-</tr>
-
-<tr>
-<td><strong><sub>/prontuario/inserir</sub></strong></td>
-<td><sub>Cadastro de um novo prontuario.</sub></td>
-
-</tr>        
-
-
-</table>
-
-<table>
-<tr>
-<th><sub>REGRAS DE NEGOCIO</sub></th>
-</tr>
-</table>
-
-<table>
-
-<tr>
-<th><sub>ROTA</sub></th>
-<th><sub>DESCRIÇÃO</sub></th> 
- 
-</tr>
-
-<tr>
-<td><strong><sub>/medico/hospitais/{CodigoMedico}</sub></strong></td>
-<td><sub>Buscar todos os hospitais do médico identificado .</sub></td>
-
-</tr>
-
-<tr>
-<td><strong><sub>/hospital/buscar-medicos/{CodigoHospital}</sub></strong></td>
-<td><sub>Buscar todos os médicos que trabalham para um hospital ID.</sub></td>
-
-</tr>
-
-<tr>
-<td><strong><sub>/prontuario/buscar-paciente/{CodigoPaciente}</sub></strong></td>
-<td><sub>Buscar todos os prontuarios de um determinado paciente através do ID.</sub></td>
-
-</tr>
-
-<tr>
-<td><strong><sub>/prontuario/buscar-medico/{CodigoMedico}</sub></strong></td>
-<td><sub>Buscar todos os prontuarios de um determinado medico através do ID.</sub></td>
-
-</tr>
-
-<tr>
-<td><strong><sub>/prontuario/buscar-enfermidade/{CodigoEnfermidade}</sub></strong></td>
-<td><sub>Buscar em todos os prontuarios que possuem uma determinada enfermidade ID.</sub></td>
-
-</tr>
-</table>
+|ROTAS                                                          |DESCRIÇÃO                                              |MÉTODOS HTTP       | 
+|---------------------------------------------------------------|-------------------------------------------------------|:-----------------:|
+|/medico/hospitais/#MedicoId                                    |Busca todos os hospitais que um médico trabalha.       |GET                |   
+|/hospital/buscar-medicos/#HospitalId                           |Buscar todos os médicos que trabalham para um hospital.|GET                |
+|/prontuario/buscar-paciente/#PacienteId                        |Buscar todos os prontuarios de um paciente ID.         |GET                |   
+|/prontuario/buscar-medico/#MedicoId                            |Buscar todos os prontuarios atendidos por um medico ID.|GET                |   
+|/prontuario/buscar-enfermidade/#EnfermidadeId                  |Buscar todos os prontuarios que possuem uma enfermidade|GET                |

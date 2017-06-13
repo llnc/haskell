@@ -1,6 +1,6 @@
 import Yesod
 import Database.Persist.Postgresql
-import Data.Text as T hiding (replace)
+import Data.Text as T hiding (replace,take,zipWith)
 import Control.Monad.Logger (runStdoutLoggingT)
              
 data App = App{connPool :: ConnectionPool}
@@ -12,7 +12,7 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 Paciente json
     nome Text
     idade Int
-    cpf Text
+    cpf Text -- sqltype=varchar(11)
    deriving Show
 Prontuario json
     pacienteId PacienteId
@@ -31,8 +31,8 @@ Enfermidade json
 Medico json
     nome Text
     idade Int
-    cpf Text
-    crm Text
+    cpf Text -- sqltype=varchar(11)
+    crm Text -- sqltype=varchar(5) -- só existem 400 mil médicos atuando no brasil
     especializacao Text
     deriving Show
 MedicoHospital json
@@ -241,15 +241,19 @@ getMedicoBuscarHospR :: MedicoId -> Handler Value
 getMedicoBuscarHospR mid = do
     hospitaisDoMedicoId <- runDB $ selectList [MedicoHospitalMedicoId ==. mid] []  -- [Entity MedicoHospital]
     hospitaisDoMedico <- runDB $ mapM (\ medicoHospital -> get404 (medicoHospitalHospitalId $ entityVal medicoHospital)) hospitaisDoMedicoId -- [Entity Hospital]
-    medico <- runDB $ get404 mid -- (Entity Medico)
-    sendResponse (object [pack ("Hospitais do médico: " ++ (unpack $ medicoNome medico) ) .= (fmap toJSON hospitaisDoMedico) ])
+    medico <- runDB $ get404 mid                                                     -- (Entity Medico)
+    let nomeMedico = medicoNome medico                                               -- Extrai o nome do médico para uma nomeação
+    let respostaObject = object[ nomeMedico .= fmap toJSON hospitaisDoMedico]        -- Monta o object de resposta
+    sendResponse (object [pack "resp" .= respostaObject ])                           -- envia a resposta para o cliente
 
 getHospitalBuscarMedicoR :: HospitalId -> Handler Value
 getHospitalBuscarMedicoR hid = do
     medicosDoHospitalId <- runDB $ selectList [MedicoHospitalHospitalId ==. hid] []  
     medicosDoHospital <- runDB $ mapM (\ hospitalMedico -> get404 (medicoHospitalMedicoId $ entityVal hospitalMedico)) medicosDoHospitalId
     hospital <- runDB $ get404 hid 
-    sendResponse (object [pack ("Médicos do Hospital: " ++ (unpack $ hospitalNome hospital) ) .= (fmap toJSON medicosDoHospital ) ])
+    let nomeHospital   = hospitalNome hospital
+        respostaObject = object[ nomeHospital .= fmap toJSON medicosDoHospital] 
+    sendResponse (object [pack "resp" .= respostaObject ])
 
 getProntuarioBuscarPacienteR :: PacienteId -> Handler Value
 getProntuarioBuscarPacienteR  pid = do
@@ -266,10 +270,37 @@ getProntuarioBuscarMedicoR mid = do
     sendResponse (object[pack "resp" .= (object[pack nomePaciente .= (fmap toJSON prontuariosMedico)]) ])
 
 getProntuarioBuscarEnfermR :: EnfermidadeId -> Handler Value
-getProntuarioBuscarEnfermR enfid = undefined
-
+getProntuarioBuscarEnfermR enfid = do
+    prontuariosEnfermidadeId <- runDB $ selectList [ProntuarioEnfermidadeEnfermidadeId ==. enfid ] []
+    prontuarios <- runDB $ mapM (\ prontuarioEnfermidade -> (get404.prontuarioEnfermidadeProntuarioId.entityVal) prontuarioEnfermidade ) prontuariosEnfermidadeId
+    enfermidade <- runDB $ get404 enfid
+    let nome = enfermidadeNome enfermidade
+    let resposta = object[ nome .= fmap toJSON prontuarios] 
+    sendResponse (object[pack "resp" .= resposta ])
+    
 -- Super!
+foo :: Handler Value
+foo = undefined {-do
+    xs <- runDB $ (rawSql (pack $ "SELECT ??, ??, ?? FROM produtoz  \ 
+        \ INNER JOIN clientes_produtos ON produtoz.id=clientes_produtos.prid \ 
+        \ INNER JOIN clientes ON  clientes.id=clientes_produtos.clid \
+        \ WHERE clientes_produtos.clid = " ++ (show $ fromSqlKey pid)) []) :: Handler [(Entity Produtoz,Entity ClientesProdutos,Entity Clientes)]
+    sendResponse (object [pack "data" .= fmap (toJSON . (\(p,_,_) -> p)) xs])
 
+-}
+
+validarCPf :: [Int] -> Bool
+validarCPf cpf =
+    let -- calcula primeiro digito
+        digitos1 = take 9 cpf
+        expr1 = mod (sum (zipWith (*) digitos1 [10,9..])) 11
+        dv1 = if expr1 < 2 then 0 else 11-expr1
+        -- calcula segundo digito
+        digitos2 = digitos1 ++ [dv1]
+        expr2 = mod (sum (zipWith (*) digitos2 [11,10..])) 11
+        dv2 = if expr2 < 2 then 0 else 11-expr2
+        
+    in dv1 == cpf !! 9 && dv2 == cpf !! 10
 
 ---------------------------------------------------------------------------------------------
 
