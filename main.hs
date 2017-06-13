@@ -252,13 +252,24 @@ getHospitalBuscarMedicoR hid = do
     sendResponse (object [pack ("Médicos do Hospital: " ++ (unpack $ hospitalNome hospital) ) .= (fmap toJSON medicosDoHospital ) ])
 
 getProntuarioBuscarPacienteR :: PacienteId -> Handler Value
-getProntuarioBuscarPacienteR  prontid = undefined 
+getProntuarioBuscarPacienteR  pid = do
+    prontuariosPaciente <- runDB $ selectList [ProntuarioPacienteId ==. pid] []
+    paciente <- runDB $ get404 pid
+    let nomePaciente = (unpack.pacienteNome) paciente
+    sendResponse (object [pack "resp" .= (object[pack nomePaciente .= (fmap toJSON prontuariosPaciente)]) ])
 
 getProntuarioBuscarMedicoR :: MedicoId -> Handler Value
-getProntuarioBuscarMedicoR mid = undefined
+getProntuarioBuscarMedicoR mid = do
+    prontuariosMedico <- runDB $ selectList [ProntuarioMedicoId ==. mid] []
+    medico <- runDB $ get404 mid
+    let nomePaciente = (unpack.medicoNome) medico
+    sendResponse (object[pack "resp" .= (object[pack nomePaciente .= (fmap toJSON prontuariosMedico)]) ])
 
 getProntuarioBuscarEnfermR :: EnfermidadeId -> Handler Value
 getProntuarioBuscarEnfermR enfid = undefined
+
+-- Super!
+
 
 ---------------------------------------------------------------------------------------------
 

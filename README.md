@@ -8,13 +8,13 @@
 </tr>
 <tr>
 <td><strong><sub>/</sub></strong></td>
-<td><sub>Contêm informações sobre o sistema, links de acesso, um resumo e cidades disponíveis.</sub></td>
+<td><sub></sub></td>
 
 </tr>
 
 <tr>
 <td><strong><sub>/paciente/{CodigoPaciente}</sub></strong></td>
-<td><sub>Buscar paciente pelo ID.</sub></td>
+<td><sub>Buscar paciente através do ID.</sub></td>
 
 </tr>
 <tr>
@@ -29,7 +29,7 @@
 </tr>    
 <tr>
 <td><strong><sub>/paciente/inserir</sub></strong></td>
-<td><sub>Para cadastro de novo paciente.</sub></td>
+<td><sub>Cadastar novo paciente.</sub></td>
 
 </tr>        
 <tr>
@@ -46,7 +46,7 @@
 
 <tr>
 <td><strong><sub>/medico/{CodigoMedico}</sub></strong></td>
-<td><sub>Buscar medico pelo ID.</sub></td>
+<td><sub>Buscar medico utilizando o ID.</sub></td>
 
 </tr>
 <tr>
@@ -61,7 +61,7 @@
 </tr>    
 <tr>
 <td><strong><sub>/medico/inserir</sub></strong></td>
-<td><sub>Para cadastro de novo medico.</sub></td>
+<td><sub>Cadastrar novo medico.</sub></td>
 
 </tr>        
 <tr>
@@ -71,13 +71,13 @@
 </tr>
 <tr>
 <td><strong><sub>/medico/especializacao</sub></strong></td>
-<td><sub>Buscar todos os médicos de uma determinada especialidade.</sub></td>
+<td><sub>Buscar todos os médicos especialidade.</sub></td>
 
 </tr>
 
 <tr>
 <td><strong><sub>/medico/hospitais/{CodigoMedico}</sub></strong></td>
-<td><sub>Buscar todos os hospitais que determinado medico trabalha.</sub></td>
+<td><sub>Buscar todos os hospitais do médico identificado .</sub></td>
 
 </tr>
 
@@ -99,7 +99,7 @@
 </tr>    
 <tr>
 <td><strong><sub>/hospital/inserir</sub></strong></td>
-<td><sub>Para cadastro de novo hospital.</sub></td>
+<td><sub>Cadastrar novo hospital.</sub></td>
 
 </tr>        
 <tr>
@@ -109,14 +109,14 @@
 </tr>
 <tr>
 <td><strong><sub>/hospital/buscar-medico/{CodigoHospital}</sub></strong></td>
-<td><sub>Buscar todos os medicos que trabalham em um determinado hospital</sub></td>
+<td><sub>Buscar todos os medicos que trabalham em um hospital ID</sub></td>
 
 </tr>
 
 
 <tr>
 <td><strong><sub>/enfermidade/{CodigoEnfermidade}</sub></strong></td>
-<td><sub>Buscar enfermidade pelo ID.</sub></td>
+<td><sub>Buscar enfermidade utilizando o ID.</sub></td>
 
 </tr>
 <tr>
@@ -126,20 +126,20 @@
 </tr>
 <tr>
 <td><strong><sub>/enfermidade/inserir</sub></strong></td>
-<td><sub>Para cadastro de uma nova enfermidade.</sub></td>
+<td><sub>Cadastrar nova enfermidade.</sub></td>
 
 </tr>    
 
 <tr>
 <td><strong><sub>/enfermidade/buscar/</sub></strong></td>
-<td><sub>Buscar enfermidade através do nome</sub></td>
+<td><sub>Buscar enfermidade através do nome.</sub></td>
 
 </tr>
 
 
 <tr>
 <td><strong><sub>/prontuario/{CodigoProntuario}</sub></strong></td>
-<td><sub>Buscar prontuario pelo ID.</sub></td>
+<td><sub>Buscar prontuario utilizando o ID.</sub></td>
 
 </tr>
 <tr>
@@ -150,22 +150,22 @@
 
 <tr>
 <td><strong><sub>/prontuario/inserir</sub></strong></td>
-<td><sub>Para cadastro de um novo prontuario.</sub></td>
+<td><sub>Cadastro de um novo prontuario.</sub></td>
 
 </tr>        
 <tr>
-<td><strong><sub/prontuario/buscar-paciente/{CodigoPaciente}</sub></strong></td>
+<td><strong><sub>/prontuario/buscar-paciente/{CodigoPaciente}</sub></strong></td>
 <td><sub>Buscar todos os prontuarios de um determinado paciente através do ID.</sub></td>
 
 </tr>
 <tr>
-<td><strong><sub/prontuario/buscar-medico/{CodigoMedico}</sub></strong></td>
+<td><strong><sub>/prontuario/buscar-medico/{CodigoMedico}</sub></strong></td>
 <td><sub>Buscar todos os prontuarios de um determinado medico através do ID.</sub></td>
 
 </tr>
 <tr>
-<td><strong><sub/prontuario/buscar-enfermidade/{CodigoEnfermidade}</sub></strong></td>
-<td><sub>Buscar todos os prontuarios que possuem uma determinada enfermidade através do ID.</sub></td>
+<td><strong><sub>/prontuario/buscar-enfermidade/{CodigoEnfermidade}</sub></strong></td>
+<td><sub>Buscar em todos os prontuarios que possuem uma determinada enfermidade ID.</sub></td>
 
 </tr>
 
