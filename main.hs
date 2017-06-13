@@ -69,7 +69,7 @@ mkYesod "App" [parseRoutes|
 /hospital/listarHospitais                           HospitalListarR             GET
 /hospital/inserir                                   HospitalInserirR            POST
 /hospital/alterar/#HospitalId                       HospitalAlterarR            PUT
-/hospital/buscar-medicos/#HospitalId                 HospitalBuscarMedicoR       GET --
+/hospital/buscar-medicos/#HospitalId                HospitalBuscarMedicoR       GET --
 
 !/enfermidade/#EnfermidadeId                        EnfermidadeBuscarR          GET
 /enfermidade/listarEnfermidades                     EnfermidadesListarR         GET

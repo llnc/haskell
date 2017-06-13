@@ -76,13 +76,6 @@
 </tr>
 
 <tr>
-<td><strong><sub>/medico/hospitais/{CodigoMedico}</sub></strong></td>
-<td><sub>Buscar todos os hospitais do médico identificado .</sub></td>
-
-</tr>
-
-
-<tr>
 <td><strong><sub>/hospital/{CodigoHospital}</sub></strong></td>
 <td><sub>Buscar hospital pelo ID.</sub></td>
 
@@ -153,21 +146,51 @@
 <td><sub>Cadastro de um novo prontuario.</sub></td>
 
 </tr>        
+
+
+</table>
+
+<table>
+<tr>
+<th><sub>REGRAS DE NEGOCIO</sub></th>
+</tr>
+</table>
+
+<table>
+
+<tr>
+<th><sub>ROTA</sub></th>
+<th><sub>DESCRIÇÃO</sub></th> 
+ 
+</tr>
+
+<tr>
+<td><strong><sub>/medico/hospitais/{CodigoMedico}</sub></strong></td>
+<td><sub>Buscar todos os hospitais do médico identificado .</sub></td>
+
+</tr>
+
+<tr>
+<td><strong><sub>/hospital/buscar-medicos/{CodigoHospital}</sub></strong></td>
+<td><sub>Buscar todos os médicos que trabalham para um hospital ID.</sub></td>
+
+</tr>
+
 <tr>
 <td><strong><sub>/prontuario/buscar-paciente/{CodigoPaciente}</sub></strong></td>
 <td><sub>Buscar todos os prontuarios de um determinado paciente através do ID.</sub></td>
 
 </tr>
+
 <tr>
 <td><strong><sub>/prontuario/buscar-medico/{CodigoMedico}</sub></strong></td>
 <td><sub>Buscar todos os prontuarios de um determinado medico através do ID.</sub></td>
 
 </tr>
+
 <tr>
 <td><strong><sub>/prontuario/buscar-enfermidade/{CodigoEnfermidade}</sub></strong></td>
 <td><sub>Buscar em todos os prontuarios que possuem uma determinada enfermidade ID.</sub></td>
 
 </tr>
-
-
 </table>
