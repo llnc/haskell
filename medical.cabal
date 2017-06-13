@@ -31,4 +31,5 @@ executable         medical
                  , text
                  , persistent-postgresql
                  , monad-logger
+                 , time
                 

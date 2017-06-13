@@ -2,6 +2,7 @@ import Yesod
 import Database.Persist.Postgresql
 import Data.Text as T hiding (replace,take,zipWith)
 import Control.Monad.Logger (runStdoutLoggingT)
+import Data.Time.Calendar
              
 data App = App{connPool :: ConnectionPool}
 
@@ -18,7 +19,7 @@ Prontuario json
     pacienteId PacienteId
     medicoId MedicoId
     hospitalId HospitalId
-    dat Text
+    dat Day
     deriving Show
 ProntuarioEnfermidade json
     prontuarioId ProntuarioId
