@@ -35,10 +35,13 @@ Medico json
     crm Text
     especializacao Text
     deriving Show
+MedicoHospital
+    medicoId MedicoId
+    hospitalId HospitalId
+    deriving Show
 Hospital json
     nome Text
     cnpj Text
-    medicoId MedicoId
     deriving Show
 |]
 
@@ -72,8 +75,6 @@ mkYesod "App" [parseRoutes|
 /enfermidade/listarEnfermidades                     EnfermidadesListarR         GET
 /enfermidade/inserir                                EnfermidadeInserirR         POST
 /enfermidade/buscar/#Text                           EnfermidadeBuscarNomeR      GET
-
-
 
 !/prontuario/#ProntuarioId                          ProntuarioBuscarR           GET
 /prontuario/listarProntuarios                       ProntuariosListarR          GET
@@ -123,8 +124,9 @@ deletePacienteRemoverR pid = do
     runDB $ delete pid
     sendResponse (object [pack "resp" .= pack "Paciente Deletado com sucesso"] )
 
+---------------------------------------------------------------------------------------------
 -- ========= Medico
--------------------------------------
+
 getMedicoBuscarR :: MedicoId -> Handler Value
 getMedicoBuscarR mid = do
     medico <- runDB $ get404 mid
@@ -140,14 +142,12 @@ getMedicosListarR = do
     medico <- runDB $ selectList [] [Asc MedicoNome]
     sendResponse ( object [pack "resp" .= toJSON medico ])
     
-
 postMedicoInserirR :: Handler ()
 postMedicoInserirR = do
     medico <- requireJsonBody :: Handler Medico
     mid <- runDB $ insert medico
     sendResponse ( object [pack "resp" .= pack "Medico inserido com sucesso" ])
     
-
 putMedicoAlterarR :: MedicoId -> Handler ()
 putMedicoAlterarR mid = do
     medico <- requireJsonBody :: Handler Medico
@@ -159,9 +159,9 @@ getMedicoBuscarEspecR espnome = do
     especializacao <- runDB $ selectList [Filter MedicoEspecializacao (Left $ T.concat ["%", espnome, "%"]) (BackendSpecificFilter "ILIKE")] []
     sendResponse ( object [pack "resp" .= toJSON especializacao ])
 
--- REGRAS    
----------------------------------------------------
+---------------------------------------------------------------------------------------------
 -- =========HOSPITAL
+
 getHospitalBuscarR :: HospitalId -> Handler Value
 getHospitalBuscarR hid = do
     hospital <- runDB $ get404 hid
@@ -183,18 +183,13 @@ postHospitalInserirR = do
     hid <- runDB $ insert hospital
     sendResponse ( object [pack "resp" .= pack "Hospital inserido com sucesso" ])
     
-
 putHospitalAlterarR :: HospitalId -> Handler ()
 putHospitalAlterarR hid = do
     hospital <- requireJsonBody :: Handler Hospital
     runDB $ replace hid hospital
     sendResponse ( object [pack "resp" .= pack "Hospital atualizado com sucesso" ])
     
--- getHospitalBuscarMedicoR
-
-
-
----------------------------------------------------------------------------------------------VERIFICAR
+---------------------------------------------------------------------------------------------
 -- =========PRONTUARIO
 
 getProntuarioBuscarR :: ProntuarioId -> Handler Value
@@ -215,7 +210,7 @@ postProntuarioInserirR = do
         insert $ ProntuarioEnfermidade pid eid
     sendResponse ( object [pack "resp" .= pack "Prontuario inserido com sucesso" ])
     
----------------------------------------------------------------------------------------------VERIFICAR
+---------------------------------------------------------------------------------------------
 -- ========= ENFERMIDADE
 
 getEnfermidadeBuscarR :: EnfermidadeId -> Handler Value
@@ -239,16 +234,18 @@ getEnfermidadeBuscarNomeR enome = do
     enfermidades <- runDB $ selectList [Filter EnfermidadeNome (Left $ T.concat ["%", enome, "%"]) (BackendSpecificFilter "ILIKE")] []
 -- (rawSql "select ?? from Enfermidade where nome ilike '%?%'" [toPersistText enome]) :: [Entity Enfermidade]
     sendResponse ( object [pack "resp" .= toJSON enfermidades ])
-    
-    
-    
+
 -- ===================================== REGRAS DE NEGOCIO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 getMedicoBuscarHospR :: MedicoId -> Handler Value
-getMedicoBuscarHospR mid = undefined
-
+getMedicoBuscarHospR mid = undefined{-do
+    hospitaisDoMedico <- runDB $ selectList [HospitalMedicoId ==. mid] []
+    sendResponse ( object [pack "resp" .= (fmap toJSON hospitaisDoMedico )])
+-}
 getHospitalBuscarMedicoR :: HospitalId -> Handler Value
-getHospitalBuscarMedicoR hid = undefined
+getHospitalBuscarMedicoR hid = do
+    medicosDoHospital <- runDB $ selectList [HospitalId ==. hid] []
+    sendResponse (object [pack "resp" .= (fmap toJSON medicosDoHospital)] )
 
 getProntuarioBuscarPacienteR :: PacienteId -> Handler Value
 getProntuarioBuscarPacienteR  prontid = undefined 
@@ -258,7 +255,8 @@ getProntuarioBuscarMedicoR mid = undefined
 
 getProntuarioBuscarEnfermR :: EnfermidadeId -> Handler Value
 getProntuarioBuscarEnfermR enfid = undefined
------------------------------------------------
+
+---------------------------------------------------------------------------------------------
 
 instance YesodPersist App where
    type YesodPersistBackend App = SqlBackend
@@ -266,9 +264,8 @@ instance YesodPersist App where
        master <- getYesod
        let pool = connPool master
        runSqlPool f pool
-------------------------------------------------------
-
-
+       
+---------------------------------------------------------------------------------------------
 
 connStr = "dbname=dbs10j40oj2r50 host=ec2-54-225-95-99.compute-1.amazonaws.com user=ywzfzssfskwcju password=QOoBT4kER9KgAod70niCY3T6tB port=5432"
 
@@ -276,5 +273,3 @@ main::IO()
 main = runStdoutLoggingT $ withPostgresqlPool connStr 10 $ \pool -> liftIO $ do 
        runSqlPersistMPool (runMigration migrateAll) pool
        warp 8080 (App pool)
-       
-       
