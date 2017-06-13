@@ -1,7 +1,7 @@
 # medical
 "testando commit"
 
-## Rotas 
+## Rotas
 
 <table>
     <tr>
@@ -14,6 +14,7 @@
         <td><sub>Contêm informações sobre o sistema, links de acesso, um resumo e cidades disponíveis.</sub></td>
        
     </tr>
+     ## PACIENTE
     <tr>
         <td><strong><sub>/paciente/{CodigoPaciente}</sub></strong></td>
         <td><sub>Buscar paciente pelo ID.</sub></td>
@@ -44,7 +45,7 @@
         <td><sub>Remover paciente através do ID.</sub></td>
         
     </tr>
-    ---------------------------------------------------------------------------- MEDICO
+    ## MEDICO
     
     <tr>
         <td><strong><sub>/medico/{CodigoMedico}</sub></strong></td>
@@ -82,7 +83,7 @@
         <td><sub>Buscar todos os hospitais que determinado medico trabalha.</sub></td>
         
     </tr>
-        ---------------------------------------------------------------------------- HOSPITAL
+        ## HOSPITAL
     
     <tr>
         <td><strong><sub>/hospital/{CodigoHospital}</sub></strong></td>
@@ -114,7 +115,7 @@
         <td><sub>Buscar todos os medicos que trabalham em um determinado hospital</sub></td>
         
     </tr>
-            ---------------------------------------------------------------------------- ENFERMIDADE
+            ## ENFERMIDADE
     
     <tr>
         <td><strong><sub>/enfermidade/{CodigoEnfermidade}</sub></strong></td>
@@ -137,7 +138,7 @@
         <td><sub>Buscar enfermidade através do nome</sub></td>
         
     </tr>
-     ---------------------------------------------------------------------------- PRONTUARIO
+    ## PRONTUARIO
     
     <tr>
         <td><strong><sub>/prontuario/{CodigoProntuario}</sub></strong></td>
