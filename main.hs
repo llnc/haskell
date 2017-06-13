@@ -35,7 +35,7 @@ Medico json
     crm Text
     especializacao Text
     deriving Show
-MedicoHospital
+MedicoHospital json
     medicoId MedicoId
     hospitalId HospitalId
     deriving Show
@@ -69,7 +69,7 @@ mkYesod "App" [parseRoutes|
 /hospital/listarHospitais                           HospitalListarR             GET
 /hospital/inserir                                   HospitalInserirR            POST
 /hospital/alterar/#HospitalId                       HospitalAlterarR            PUT
-/hospital/buscar-medico/#HospitalId                 HospitalBuscarMedicoR       GET --
+/hospital/buscar-medicos/#HospitalId                 HospitalBuscarMedicoR       GET --
 
 !/enfermidade/#EnfermidadeId                        EnfermidadeBuscarR          GET
 /enfermidade/listarEnfermidades                     EnfermidadesListarR         GET
@@ -238,14 +238,18 @@ getEnfermidadeBuscarNomeR enome = do
 -- ===================================== REGRAS DE NEGOCIO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 getMedicoBuscarHospR :: MedicoId -> Handler Value
-getMedicoBuscarHospR mid = undefined{-do
-    hospitaisDoMedico <- runDB $ selectList [HospitalMedicoId ==. mid] []
-    sendResponse ( object [pack "resp" .= (fmap toJSON hospitaisDoMedico )])
--}
+getMedicoBuscarHospR mid = do
+    hospitaisDoMedicoId <- runDB $ selectList [MedicoHospitalMedicoId ==. mid] []  -- [Entity MedicoHospital]
+    hospitaisDoMedico <- runDB $ mapM (\ medicoHospital -> get404 (medicoHospitalHospitalId $ entityVal medicoHospital)) hospitaisDoMedicoId -- [Entity Hospital]
+    medico <- runDB $ get404 mid -- (Entity Medico)
+    sendResponse (object [pack ("Hospitais do médico: " ++ (unpack $ medicoNome medico) ) .= (fmap toJSON hospitaisDoMedico) ])
+
 getHospitalBuscarMedicoR :: HospitalId -> Handler Value
 getHospitalBuscarMedicoR hid = do
-    medicosDoHospital <- runDB $ selectList [HospitalId ==. hid] []
-    sendResponse (object [pack "resp" .= (fmap toJSON medicosDoHospital)] )
+    medicosDoHospitalId <- runDB $ selectList [MedicoHospitalHospitalId ==. hid] []  
+    medicosDoHospital <- runDB $ mapM (\ hospitalMedico -> get404 (medicoHospitalMedicoId $ entityVal hospitalMedico)) medicosDoHospitalId
+    hospital <- runDB $ get404 hid 
+    sendResponse (object [pack ("Médicos do Hospital: " ++ (unpack $ hospitalNome hospital) ) .= (fmap toJSON medicosDoHospital ) ])
 
 getProntuarioBuscarPacienteR :: PacienteId -> Handler Value
 getProntuarioBuscarPacienteR  prontid = undefined 
@@ -272,4 +276,4 @@ connStr = "dbname=dbs10j40oj2r50 host=ec2-54-225-95-99.compute-1.amazonaws.com u
 main::IO()
 main = runStdoutLoggingT $ withPostgresqlPool connStr 10 $ \pool -> liftIO $ do 
        runSqlPersistMPool (runMigration migrateAll) pool
-       warp 8080 (App pool)
+       warp 8081 (App pool)
